@@ -1,0 +1,38 @@
+name: Build Zaika Royale Android APK
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Grant Execute Permission for Gradlew
+        run: chmod +x gradlew
+        continue-on-error: true
+
+      - name: Build Debug APK
+        run: ./gradlew assembleDebug --stacktrace
+        continue-on-error: true
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ZaikaRoyale-Debug-APK
+          path: |
+            android/app/build/outputs/apk/debug/*.apk
+            app/build/outputs/apk/debug/*.apk
+            **/*.apk
